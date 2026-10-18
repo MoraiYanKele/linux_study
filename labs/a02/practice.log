@@ -1,0 +1,14 @@
+2026-10-18 10:00:01 INFO task=build started
+2026-10-18 10:00:02 INFO task=build compiling main.c
+2026-10-18 10:00:03 ERROR task=build missing header
+2026-10-18 10:00:04 INFO task=test started
+2026-10-18 10:00:05 INFO task=test case_01 passed
+2026-10-18 10:00:06 ERROR task=test case_02 failed
+2026-10-18 10:00:07 INFO task=deploy started
+2026-10-18 10:00:08 ERROR task=deploy connection refused
+2026-10-18 10:00:09 INFO task=build retrying
+2026-10-18 10:00:10 INFO task=build finished
+2026-10-18 10:00:11 INFO task=test finished
+2026-10-18 10:00:12 INFO task=deploy stopped
+2026-10-18 10:01:01 INFO task=backup started
+2026-10-18 10:01:02 ERROR task=backup disk full
