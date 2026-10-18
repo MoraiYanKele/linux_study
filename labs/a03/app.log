@@ -1,0 +1,5 @@
+INFO task=build started
+ERROR task=build missing header
+INFO task=test started
+ERROR task=test failed
+INFO task=build finished
