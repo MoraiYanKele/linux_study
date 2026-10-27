@@ -1,0 +1,5 @@
+/minisv/build/
+*.o
+/minisv/minisv
+/labs/a05/demo_worker
+/labs/a03/demo
