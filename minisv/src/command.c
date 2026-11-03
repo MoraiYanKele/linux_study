@@ -6,7 +6,7 @@ static int ParseError(char *error,
     if (error != NULL) {
         snprintf(error, COMMAND_ERROR_MAX, "%s", message);
     }
-    return 0;
+    return -1;
 }
 static int NameIsValid(const char *name) {
     size_t len = strlen(name);
