@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 {
     int count = 5;       /* 默认输出 5 条 */
     int exit_code = 0;   /* 默认返回 0 */
-
+    int interval_ms = 0; /* 默认不延时 */
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--count") == 0) {
             /* 先检查后面是否有值，再访问 argv[i + 1] */
@@ -62,6 +62,19 @@ int main(int argc, char *argv[])
                         argv[i]);
                 return 2;
             }
+        } else if (strcmp(argv[i], "--interval-ms") == 0) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "--interval-ms 缺少参数值\n");
+                return 2;
+            }
+
+            i++;
+            if (parse_int(argv[i], 0, 10000, &interval_ms) != 0) {
+                fprintf(stderr,
+                        "--interval-ms 必须是 0～10000 的整数：%s\n",
+                        argv[i]);
+                return 2;
+            }
         } else {
             fprintf(stderr, "未知参数：%s\n", argv[i]);
             fprintf(stderr,
@@ -71,7 +84,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    worker_output(count);
+    worker_output(count, interval_ms);
 
     return exit_code;
 }
