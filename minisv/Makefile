@@ -1,5 +1,5 @@
 CC = gcc
-CPPFLAGS = -I inc
+CPPFLAGS = -I inc -D _POSIX_C_SOURCE=200809L
 CFLAGS = -std=c11 -Wall -Wextra -g -O0
 
 all: minisv

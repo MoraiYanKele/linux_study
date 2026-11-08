@@ -2,11 +2,43 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
-int main () {
+static int run_program(char *args[]) {
+    fflush(NULL);
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        perror("fork");
+        return -1;
+    }
+    if (pid == 0) {
+        execvp(args[0], args);
+        perror("execvp");
+        _exit(127);
+    }
+    int status;
+    waitpid(pid, &status, 0);
+    if (WIFEXITED(status)) {
+        printf("child pid=%ld exited, code=%d\n",
+               (long)pid, WEXITSTATUS(status));
+    } else if (WIFSIGNALED(status)) {
+        printf("child pid=%ld killed by signal=%d\n",
+               (long)pid, WTERMSIG(status));
+    }
+    return 0;
+}
+
+int main (int argc, char *argv[]) {
     char line[COMMAND_LINE_MAX + 2];
     Command_t command;
     char error[COMMAND_ERROR_MAX];
+    if (argc >= 2 && strcmp(argv[1], "--run") == 0) {
+        return run_program(&argv[2]);
+    }
 
     while (1) {
         printf("minisv> ");

@@ -11,7 +11,9 @@ int log_write(int fd, const void *data, size_t length) {
     const char *p = data;
 
     while (length > 0) {
-        ssize_t n = write(fd, p, length);
+        size_t chunk = length > 3 ? 3 : length;
+        ssize_t n = write(fd, p, chunk);
+        
         if (n < 0) {
             if (errno ==EINTR) {
                 continue;

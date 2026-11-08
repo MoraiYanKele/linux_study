@@ -1,0 +1,4 @@
+before: pid =4419 value=10, address=0x7ffcc851bbe0
+child: pid =4420 ppid =4419 value=200, address=0x7ffcc851bbe0, pid = 0
+before: pid =4419 value=10, address=0x7ffcc851bbe0
+parent: pid =4419 ppid =3140 value=100, address=0x7ffcc851bbe0， pid=4420
