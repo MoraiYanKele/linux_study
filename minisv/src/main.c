@@ -21,7 +21,8 @@ static int run_program(char *args[]) {
         _exit(127);
     }
     int status;
-    waitpid(pid, &status, 0);
+    int res =  waitpid(pid, &status, 0);
+    printf("res = %d\n",res);
     if (WIFEXITED(status)) {
         printf("child pid=%ld exited, code=%d\n",
                (long)pid, WEXITSTATUS(status));
@@ -36,7 +37,7 @@ int main (int argc, char *argv[]) {
     char line[COMMAND_LINE_MAX + 2];
     Command_t command;
     char error[COMMAND_ERROR_MAX];
-    if (argc >= 2 && strcmp(argv[1], "--run") == 0) {
+    if (argc >= 3 && strcmp(argv[1], "--run") == 0) {
         return run_program(&argv[2]);
     }
 
