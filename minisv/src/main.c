@@ -1,4 +1,5 @@
 #include "command.h"
+#include "task.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -6,6 +7,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+Task_t tasks[TASK_NUM_MAX];
 
 static int run_program(char *args[]) {
     fflush(NULL);
@@ -51,6 +54,11 @@ int main (int argc, char *argv[]) {
             }
             return 0;
         }
+
+        if (TaskReap(tasks) == -1) {
+            return 1;
+        }
+
         if (CommandParse(line, &command, error) != 0) {
             fprintf(stderr, "%s\n", error);
             continue;
@@ -68,9 +76,10 @@ int main (int argc, char *argv[]) {
                 for (int i = 0; i < command.argc; i++) {
                     printf("argv[%d] = %s\n", i, command.argv[i]);
                 }
+                TaskStart(tasks, command.name, command.argv);
                 break;
             case CMD_LIST:
-                printf("parsed: LIST\n");
+                TaskList(tasks);
                 break;
             case CMD_STOP:
                 printf("parsed: STOP name=%s\n", command.name);
