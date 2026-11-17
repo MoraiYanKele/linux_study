@@ -20,6 +20,6 @@ build/task.o: src/task.c inc/task.h
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c src/task.c -o build/task.o
 
 clean:
-	rm -f build/main.o build/command.o minisv
+	rm -f build/main.o build/command.o minisv build/task.o
 
 .PHONY: all clean

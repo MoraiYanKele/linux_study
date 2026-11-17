@@ -5,6 +5,8 @@
 
 #include "worker_output.h"
 
+
+
 /* 将字符串转换为指定范围内的整数。
  * 成功返回 0，失败返回 -1。
  */
@@ -34,6 +36,7 @@ int main(int argc, char *argv[])
     int count = 5;       /* 默认输出 5 条 */
     int exit_code = 0;   /* 默认返回 0 */
     int interval_ms = 0; /* 默认不延时 */
+    int ignoreTerm = 0; 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--count") == 0) {
             /* 先检查后面是否有值，再访问 argv[i + 1] */
@@ -75,16 +78,18 @@ int main(int argc, char *argv[])
                         argv[i]);
                 return 2;
             }
+        } else if (strcmp(argv[i], "--ignore-term") == 0) {
+            ignoreTerm = 1;
         } else {
             fprintf(stderr, "未知参数：%s\n", argv[i]);
             fprintf(stderr,
-                    "用法：%s [--count N] [--exit-code C]\n",
+                    "用法：%s [--count N] [--exit-code C] [--interval-ms M] [--ignore-term]\n",
                     argv[0]);
             return 2;
         }
     }
 
-    worker_output(count, interval_ms);
+    worker_output(count, interval_ms, ignoreTerm);
 
     return exit_code;
 }

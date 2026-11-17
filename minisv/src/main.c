@@ -82,7 +82,7 @@ int main (int argc, char *argv[]) {
                 TaskList(tasks);
                 break;
             case CMD_STOP:
-                printf("parsed: STOP name=%s\n", command.name);
+                TaskStop(tasks, command.name);
                 break;
             case CMD_STATS:
                 printf("parsed: STATS\n");

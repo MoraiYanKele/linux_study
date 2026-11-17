@@ -1,4 +1,5 @@
 #include "task.h"
+#include <signal.h>
 
 // 启动一个新任务
 int TaskStart(Task_t tasks[], const char *name, char *argv[]) {
@@ -53,7 +54,7 @@ int TaskReap(Task_t tasks[]) {
         } 
         if (wait_pid > 0) {
             for (int i = 0; i < TASK_NUM_MAX; i++) {
-                if (tasks[i].state == TASK_RUNNING && tasks[i].pid == wait_pid) {
+                if ((tasks[i].state == TASK_RUNNING || tasks[i].state == TASK_STOPPING) && tasks[i].pid == wait_pid) {
                     tasks[i].state = TASK_EXITED;
                     tasks[i].wait_status = status;
                     if (WIFEXITED(status)) {
@@ -82,9 +83,66 @@ int TaskReap(Task_t tasks[]) {
     return 0;
 }
 
-// 列出所有任务
-void TaskList(const Task_t task[]) {
+int TaskStop(Task_t tasks[], const char *name) {
+    if (TaskReap(tasks) == -1) {
+        return -1;
+    }
     for (int i = 0; i < TASK_NUM_MAX; i++) {
-        printf("%d, name: %s, pid=%d, state=%d\n", i, task[i].name, task[i].pid, task[i].state);
+        Task_t *task = &tasks[i];
+
+        if (task->state == TASK_EMPTY || strcmp(task->name, name) != 0) {continue;}
+
+        if (task->state == TASK_EXITED) {
+            printf("任务 %s 已退出，无法停止\n", name);
+            return -1;
+        }
+        if (task->state == TASK_STOPPING) {
+            printf("任务 %s 已在停止中\n", name);
+            return -1;
+        }
+        if (task->state != TASK_RUNNING || task->pid <= 0) {
+            printf("任务 %s 状态异常，无法停止\n", name);
+            return -1;
+        }
+
+        if (kill(task->pid, SIGTERM) == -1) {
+            if (errno == ESRCH) {
+                /* 目标可能恰好退出；最终结果仍交给 waitpid */
+                return TaskReap(tasks);
+            }
+            perror("kill");
+            return -1;
+        }    
+        task->state = TASK_STOPPING;
+        printf("任务 %s 已发送 SIGTERM 信号，正在停止中\n", name);
+        return 0;
+    }
+    printf("未找到任务 %s\n", name);
+    return -1;
+}
+
+
+
+// 列出所有任务
+void TaskList(const Task_t tasks[]) {
+    for (int i = 0; i < TASK_NUM_MAX; i++) {
+        const Task_t *task = &tasks[i];
+        if (task->state == TASK_EMPTY) {continue;}
+
+        printf("%s\tpid=%d\tstate=%d\n", task->name, task->pid, task->state);
+
+        if (task->state == TASK_RUNNING) {
+            printf("RUNNING\n");
+        } else if (task->state == TASK_STOPPING) {
+            printf("STOPPING\n");
+        } else if (task->state == TASK_EXITED) {
+            if (WIFEXITED(task->wait_status)) {
+                printf("EXITED, code=%d\n", WEXITSTATUS(task->wait_status));
+            } else if (WIFSIGNALED(task->wait_status)) {
+                printf("KILLED by signal %d\n", WTERMSIG(task->wait_status));
+            } else {
+                printf("EXITED with unknown status\n");
+            }
+        }
     }
 }

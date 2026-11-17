@@ -14,6 +14,7 @@
 typedef enum {
     TASK_EMPTY,
     TASK_RUNNING,
+    TASK_STOPPING,
     TASK_EXITED
 } TaskState_t;
 
@@ -26,4 +27,5 @@ typedef struct {
 
 int TaskStart(Task_t tasks[], const char *name, char *argv[]);
 int TaskReap(Task_t tasks[]);
+int TaskStop(Task_t tasks[], const char *name);
 void TaskList(const Task_t tasks[]);
